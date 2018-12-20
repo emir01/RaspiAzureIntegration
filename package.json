@@ -1,0 +1,21 @@
+{
+  "name": "azure-sense",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "tsc index.ts && node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^10.12.15",
+    "azure-iot-device": "^1.8.2",
+    "azure-iot-device-mqtt": "^1.8.2",
+    "nan": "^2.11.1",
+    "node-sense-hat": "0.0.2",
+    "sense-hat-led": "^1.0.1",
+    "sense-joystick": "0.0.3",
+    "typescript": "^3.2.2"
+  }
+}
