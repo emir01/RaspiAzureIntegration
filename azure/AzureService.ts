@@ -11,12 +11,11 @@ let Message = require('azure-iot-device').Message;
 export class AzureService {
     private static instance: AzureService;
 
-    private client = Client.fromConnectionString(AzureConstants.ConnectionString, Protocol);
+    private client = Client.fromConnectionString(AzureConstants.IoTConnectionString, Protocol);
 
     private constructor() {
-        console.log(AzureConstants.ConnectionString);
-
-        this.client.open((err) => this.connectCallback(err));
+        console.log(AzureConstants.IoTConnectionString);
+        this.client.open((err: any) => this.connectCallback(err));
     }
 
     static getInstance() {
@@ -27,19 +26,19 @@ export class AzureService {
         return AzureService.instance;
     }
 
-    private connectCallback(err) {
+    private connectCallback(err: any) {
         if (err) {
             console.error('Could not connect: ' + err.message);
         } else {
             console.log('Client connected');
         }
 
-        this.client.on('message', function (msg) {
+        this.client.on('message', function (msg: any) {
             MessageHub.getInstance().notify(msg);
         });
     }
 
-    sendMessage(data) {
+    sendMessage(data: any) {
         var messageData = {
             deviceId: AzureConstants.DeviceId,
             data: data
@@ -48,7 +47,7 @@ export class AzureService {
         let jsonData = JSON.stringify(messageData);
         let message = new Message(jsonData);
 
-        this.client.sendEvent(message, (err, response) => {
+        this.client.sendEvent(message, (err: any, response: any) => {
             if (err) console.log("SendMessage: error: " + err.toString());
             if (response) console.log("SendMessage: status: " + response.constructor.name);
         });

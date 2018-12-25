@@ -1,7 +1,7 @@
 export class TemperatureMeasuremenetMessage {
     temperature: number;
 
-    constructor(temp) {
+    constructor(temp: number) {
         this.temperature = temp;
     }
 }

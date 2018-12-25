@@ -9,7 +9,7 @@ export class SenseService {
     private static _service: SenseService;
 
     // ==== IMU Sensor
-    private internalImu;
+    private internalImu:any;
 
     // ==== Matrix Controls
     private readonly xMax: number = 8;
@@ -37,8 +37,8 @@ export class SenseService {
         }
     }
 
-    getTemperature(callback) {
-        this.internalImu.getValue((err, data) => {
+    getTemperature(callback:any) {
+        this.internalImu.getValue((err:any, data:any) => {
             callback(data.temperature);
         });
     }

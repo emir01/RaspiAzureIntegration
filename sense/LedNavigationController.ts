@@ -14,8 +14,8 @@ export class LedNavigationController {
     private readonly xMax: number = 8;
     private readonly yMax: number = 8;
 
-    private pixelMatrix: Array<Array<number>>;
-
+    private pixelMatrix: Array<Array<number>> = new Array<Array<number>>();
+    
     private playerColor: Array<number> = [255, 255, 255];
 
     private setLed(color: Array<number>) {

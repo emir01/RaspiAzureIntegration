@@ -18,11 +18,11 @@ export class MessageHub {
         return MessageHub.instance;
     }
 
-    subscribe(callback) {
+    subscribe(callback: any) {
         this._subscribers.push(callback);
     }
 
-    notify(message) {
+    notify(message: any) {
         this._subscribers.forEach(callback => {
             callback(message);
         });
