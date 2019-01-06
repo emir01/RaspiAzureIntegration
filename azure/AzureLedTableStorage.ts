@@ -1,5 +1,5 @@
-import { PiLEDStorageModel } from './../Models/PiLedStorageModel';
-import { PiLEDModel } from '../Models/PiLedModel';
+import { AzureHelpers } from './AzureHelpers';
+import { PiLedModel } from '../Models/PiLedModel';
 import { AzureConstants } from "../constants/AzureConstants";
 
 import * as Azure from "azure-storage";
@@ -17,10 +17,7 @@ export class AzureLedTableStorage {
 
         this.tableService.createTableIfNotExists(this.tableName, function (error: any, result: any, response: any) {
             if (error) {
-                console.log(error);
-            }
-            else {
-                console.log(result);
+                console.log("!!! Error Creating Table !!!");
             }
         });
     }
@@ -33,19 +30,22 @@ export class AzureLedTableStorage {
         return AzureLedTableStorage.instance;
     }
 
-    writeLedModel(model: PiLEDModel) {
-
-        this.tableService.insertOrReplaceEntity(this.tableName, new PiLEDStorageModel(model), function (error, result, response) {
+    writeLedModel(model: PiLedModel) {
+        this.tableService.insertOrReplaceEntity(this.tableName, model.serializeForStorage(), function (error, result, response) {
             if (error) {
                 console.log(error);
-            }
-            else {
-                console.log(result);
             }
         });
     }
 
-    loadLedModel(ledModel: PiLEDModel, callback: (ledModel: PiLEDModel) => any) {
-        // todo:!
+    loadLedModel(ledModel: PiLedModel, callback: (ledModel: PiLedModel) => any) {
+        this.tableService.retrieveEntity(this.tableName, ledModel.PartitionKey, ledModel.RowKey, (error: any, result: any, response: any) => {
+            if (!error) {
+                var ledMatrixDto = AzureHelpers.mapMetadataToRegularObject(result);
+                ledModel.mapFromDto(ledMatrixDto);
+
+                callback(ledModel);
+            }
+        })
     }
 }

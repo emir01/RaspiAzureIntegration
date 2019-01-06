@@ -11,10 +11,10 @@ let Message = require('azure-iot-device').Message;
 export class AzureService {
     private static instance: AzureService;
 
-    private client = Client.fromConnectionString(AzureConstants.IoTConnectionString, Protocol);
+    private client = Client.fromConnectionString(AzureConstants.ConnectionString, Protocol);
 
     private constructor() {
-        console.log(AzureConstants.IoTConnectionString);
+        console.log(AzureConstants.ConnectionString);
         this.client.open((err: any) => this.connectCallback(err));
     }
 
