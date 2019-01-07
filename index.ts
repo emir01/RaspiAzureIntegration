@@ -2,34 +2,45 @@ import { PiLedModel } from './Models/PiLedModel';
 import { AzureLedTableStorage } from './azure/AzureLedTableStorage';
 import { AzureConstants } from './constants/AzureConstants';
 import { SenseService } from './sense/SenseService';
-import { AzureService } from './azure/AzureService';
+import { AzureIoTService } from './azure/AzureIoTService';
 import { MessageHub } from './hub/MessageHub';
 
 class Startup {
-    public static main(): number {
-        // let azureConnection = AzureService.getInstance();
-        let senseService = SenseService.getInstance();
-        let storage = AzureLedTableStorage.getInstance();
+    senseService: SenseService = SenseService.getInstance();
+    azureLedTableStorage: AzureLedTableStorage = AzureLedTableStorage.getInstance();
+    azureIotService: AzureIoTService = AzureIoTService.getInstance();
+    messageHub: MessageHub = MessageHub.getInstance();
 
-        // messageHub.subscribe(msg => {
-        //     var object = JSON.parse(msg.data.toString());
-        //     senseService.setPixel(object.x, object.y, object.color);
-        // });
+    constructor() {
+        this.senseService = SenseService.getInstance();
+        this.azureLedTableStorage = AzureLedTableStorage.getInstance();
+        this.azureIotService = AzureIoTService.getInstance();
+        this.messageHub = MessageHub.getInstance();
+    }
 
-        let ledMatrixModel = new PiLedModel(AzureConstants.LedMatrixPartition, AzureConstants.LedMatrixKey, AzureConstants.LedMatrixSize);
+    main(): any {
+        /*
+            Design Note:
+            1. Listen to messages from the message hub - notifiying that changes have been made to led storage model
+            2. After message read from storage and show new led matrix
+        */
+        let ledModel = new PiLedModel(AzureConstants.LedMatrixPartition, AzureConstants.LedMatrixKey, AzureConstants.LedMatrixSize);
+        this.senseService.turnOffBoardLeds();
 
-        setInterval(() => {
-            ledMatrixModel.matrix = senseService.randomizeFullPixelArray(senseService.getNumberOfPixels());
-            senseService.setPixelsFromLedModel(ledMatrixModel);
-        }, 200);
+        this.messageHub.subscribe((msg: any) => {
+            console.log("Message Recieved: ", msg.data.toString());
 
-        // load it from storage
-        // storage.loadLedModel(ledMatrixModel, (ledModel) => {
-        //     senseService.setPixelsFromLedModel(ledModel);
-        // });
+            // for now ignore message content and just update the led matrix from storage data
+            
+            this.loadModelAndDisplay(ledModel);
+        });
+    }
 
-        return 0;
+    loadModelAndDisplay(ledModel: PiLedModel) {
+        this.azureLedTableStorage.loadLedModel(ledModel, (ledModel) => {
+            this.senseService.setBoardPixelsFromLedModel(ledModel);
+        });
     }
 }
 
-Startup.main();
+new Startup().main();

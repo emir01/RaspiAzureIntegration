@@ -1,24 +1,19 @@
 import { Colors } from './../constants/colors';
 import { PiLedModel } from '../Models/PiLedModel';
+import { PixelHelpers } from './PixelHelpers';
+
 var senseHatImu = require('node-sense-hat').Imu;
 var senseLed = require("sense-hat-led");
 var senseJoystick = require('sense-joystick');
 
 export class SenseService {
-
-    // ==== Singleton
     private static _service: SenseService;
 
-    // ==== IMU Sensor
     private internalImu: any;
 
-    // ==== Matrix Controls
-    private readonly xMax: number = 8;
-    private readonly yMax: number = 8;
-
+    private readonly xMaxBoard: number = 8;
+    private readonly yMaxBoard: number = 8;
     private pixelMatrix: Array<Array<number>>;
-
-    // ==== Implementation
 
     static getInstance() {
         if (!this._service) {
@@ -30,15 +25,13 @@ export class SenseService {
 
     private constructor() {
         this.internalImu = new senseHatImu.IMU();
-        this.pixelMatrix = new Array<Array<number>>();
+        this.pixelMatrix = new Array<Array<number>>(this.xMaxBoard * this.yMaxBoard);
 
-        for (var index = 0; index < this.xMax * this.yMax; index++) {
-            this.pixelMatrix.push(Colors.Off);
-        }
+        this.turnOffBoardLeds();
     }
 
-    getNumberOfPixels() {
-        return this.xMax * this.yMax;
+    getNumberOfPixelsOfCurrentBoard() {
+        return this.xMaxBoard * this.yMaxBoard;
     }
 
     getTemperature(callback: any) {
@@ -47,31 +40,12 @@ export class SenseService {
         });
     }
 
-    randomizeFullPixelArray(numberOfPixels: number): Array<Array<number>> {
-        let list = new Array<Array<number>>(numberOfPixels);
-        
-        for (let pixelIndex = 0; pixelIndex < list.length; pixelIndex++) {
-            let pixelArray = list[pixelIndex];
-
-            pixelArray = [
-                Math.floor(Math.random() * Math.floor(255)),
-                Math.floor(Math.random() * Math.floor(255)),
-                Math.floor(Math.random() * Math.floor(255))
-            ]
-
-            list[pixelIndex] = pixelArray;
-        }
-        
-        return list;
-    }
-
-    setPixel(x: number, y: number, playerColor: Array<number>) {
-        var index = x * this.xMax + y;
-        this.pixelMatrix[index] = playerColor;
+    turnOffBoardLeds() {
+        PixelHelpers.setAllMatrixPixelsToColor(this.pixelMatrix, () => Colors.Off)
         senseLed.setPixels(this.pixelMatrix);
     }
 
-    setPixelsFromLedModel(ledModel: PiLedModel) {
+    setBoardPixelsFromLedModel(ledModel: PiLedModel) {
         let matrix = ledModel.matrix;
         senseLed.setPixels(matrix);
     }

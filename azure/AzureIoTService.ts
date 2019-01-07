@@ -2,14 +2,17 @@ import { AzureConstants } from "../constants/AzureConstants";
 import { MessageHub } from "../hub/MessageHub";
 
 let Protocol = require('azure-iot-device-mqtt').Mqtt;
+
 let Client = require('azure-iot-device').Client;
+
 let Message = require('azure-iot-device').Message;
 
 /*
     Maintain the Azure Connection
 */
-export class AzureService {
-    private static instance: AzureService;
+
+export class AzureIoTService {
+    private static instance: AzureIoTService;
 
     private client = Client.fromConnectionString(AzureConstants.ConnectionString, Protocol);
 
@@ -19,11 +22,11 @@ export class AzureService {
     }
 
     static getInstance() {
-        if (!AzureService.instance) {
-            AzureService.instance = new AzureService();
+        if (!AzureIoTService.instance) {
+            AzureIoTService.instance = new AzureIoTService();
         }
 
-        return AzureService.instance;
+        return AzureIoTService.instance;
     }
 
     private connectCallback(err: any) {

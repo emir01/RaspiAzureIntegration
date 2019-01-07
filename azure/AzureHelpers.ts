@@ -1,5 +1,5 @@
 /*
-    Utilities to map Azure 
+    Helpers with Azure Integration
 */
 
 import * as _ from "lodash";
