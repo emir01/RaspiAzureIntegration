@@ -1,9 +1,11 @@
-import { PiLedModel } from './Models/PiLedModel';
-import { AzureLedTableStorage } from './azure/AzureLedTableStorage';
+import { PixelHelpers } from './sense/PixelHelpers';
+
 import { AzureConstants } from './constants/AzureConstants';
 import { SenseService } from './sense/SenseService';
 import { AzureIoTService } from './azure/AzureIoTService';
 import { MessageHub } from './hub/MessageHub';
+import { AzureLedTableStorage } from './azure/AzureLedTableStorage';
+import { PiLedModel } from './Models/PiLedModel';
 
 class Startup {
     senseService: SenseService = SenseService.getInstance();
@@ -27,11 +29,13 @@ class Startup {
         let ledModel = new PiLedModel(AzureConstants.LedMatrixPartition, AzureConstants.LedMatrixKey, AzureConstants.LedMatrixSize);
         this.senseService.turnOffBoardLeds();
 
+        ledModel.matrix = PixelHelpers.getRandomPixelArray(64);
+
+        this.azureLedTableStorage.writeLedModel(ledModel);
+
         this.messageHub.subscribe((msg: any) => {
             console.log("Message Recieved: ", msg.data.toString());
 
-            // for now ignore message content and just update the led matrix from storage data
-            
             this.loadModelAndDisplay(ledModel);
         });
     }
