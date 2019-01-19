@@ -17,11 +17,11 @@ export class AzureLedTableStorage {
 
         this.tableService.createTableIfNotExists(this.tableName, function (error: any, result: any, response: any) {
             if (error) {
-                console.log("!!! Error Creating Table !!!");
+                console.log("ERR: Creating Table: ", error);
             }
         });
     }
-
+    
     static getInstance() {
         if (!AzureLedTableStorage.instance) {
             AzureLedTableStorage.instance = new AzureLedTableStorage();
@@ -33,18 +33,20 @@ export class AzureLedTableStorage {
     writeLedModel(model: PiLedModel) {
         this.tableService.insertOrReplaceEntity(this.tableName, model.serializeForStorage(), function (error, result, response) {
             if (error) {
-                console.log(error);
+                console.log("ERR:Writing Led Model: ", error);
             }
         });
     }
 
-    loadLedModel(ledModel: PiLedModel, callback: (ledModel: PiLedModel) => any) {
+    loadLedModel(ledModel: PiLedModel, success: (ledModel: PiLedModel) => any, errorCallback: (error:any) => any) {
         this.tableService.retrieveEntity(this.tableName, ledModel.PartitionKey, ledModel.RowKey, (error: any, result: any, response: any) => {
             if (!error) {
                 var ledMatrixDto = AzureHelpers.mapMetadataToRegularObject(result);
                 ledModel.mapFromDto(ledMatrixDto);
-
-                callback(ledModel);
+                success(ledModel);
+            }
+            else {
+                errorCallback(error);
             }
         })
     }

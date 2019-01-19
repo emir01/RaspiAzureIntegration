@@ -15,16 +15,16 @@ export class PiLedModel extends TableEntity {
     }
 
     mapFromDto(dto: any) {
-        this.size = dto.size;
-        this.matrix = JSON.parse(dto.matrix);
+        this.size = dto.Size;
+        this.matrix = JSON.parse(dto.Matrix);
     }
 
     serializeForStorage(): object {
         var seriazible = {
             PartitionKey: this.PartitionKey,
             RowKey: this.RowKey,
-            size: this.size,
-            matrix: JSON.stringify(this.matrix)
+            Size: this.size,
+            Matrix: JSON.stringify(this.matrix)
         };
 
         return seriazible;

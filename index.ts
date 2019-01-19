@@ -6,6 +6,7 @@ import { AzureIoTService } from './azure/AzureIoTService';
 import { MessageHub } from './hub/MessageHub';
 import { AzureLedTableStorage } from './azure/AzureLedTableStorage';
 import { PiLedModel } from './Models/PiLedModel';
+import { Strings } from './constants/Strings';
 
 class Startup {
     senseService: SenseService = SenseService.getInstance();
@@ -29,20 +30,28 @@ class Startup {
         let ledModel = new PiLedModel(AzureConstants.LedMatrixPartition, AzureConstants.LedMatrixKey, AzureConstants.LedMatrixSize);
         this.senseService.turnOffBoardLeds();
 
-        ledModel.matrix = PixelHelpers.getRandomPixelArray(64);
+        this.loadModelAndDisplay(ledModel);
 
-        this.azureLedTableStorage.writeLedModel(ledModel);
+        // ledModel.matrix = PixelHelpers.getRandomPixelArray(64);
+        // this.azureLedTableStorage.writeLedModel(ledModel);
 
         this.messageHub.subscribe((msg: any) => {
-            console.log("Message Recieved: ", msg.data.toString());
-
-            this.loadModelAndDisplay(ledModel);
+            console.log("Refresh Sub Call");
+            if(msg.data.toString() == Strings.MESSAGE_REFRESH){
+                this.loadModelAndDisplay(ledModel);
+            }
         });
+
+        // reload just in case on every 10 seconds
+        //setInterval(()=>this.loadModelAndDisplay(ledModel), 10000);
     }
 
     loadModelAndDisplay(ledModel: PiLedModel) {
+        let model = ledModel;
         this.azureLedTableStorage.loadLedModel(ledModel, (ledModel) => {
             this.senseService.setBoardPixelsFromLedModel(ledModel);
+        }, ()=>{
+            this.loadModelAndDisplay(model);
         });
     }
 }

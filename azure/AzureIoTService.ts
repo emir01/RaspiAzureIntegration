@@ -32,11 +32,11 @@ export class AzureIoTService {
     private connectCallback(err: any) {
         if (err) {
             console.error('Could not connect: ' + err.message);
-        } else {
-            console.log('Client connected');
+            return;
         }
 
         this.client.on('message', function (msg: any) {
+            console.log("MSG:Client: ", msg)
             MessageHub.getInstance().notify(msg);
         });
     }
