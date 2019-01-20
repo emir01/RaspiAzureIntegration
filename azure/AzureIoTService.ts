@@ -1,5 +1,5 @@
-import { AzureConstants } from "../constants/AzureConstants";
-import { MessageHub } from "../hub/MessageHub";
+import { MessageHub } from './../hub/MessageHub';
+import { AzureConstants } from './../constants/AzureConstants';
 
 let Protocol = require('azure-iot-device-mqtt').Mqtt;
 
@@ -18,6 +18,8 @@ export class AzureIoTService {
 
     private constructor() {
         console.log(AzureConstants.ConnectionString);
+
+        //todo - purge all old messages
         this.client.open((err: any) => this.connectCallback(err));
     }
 
@@ -36,7 +38,7 @@ export class AzureIoTService {
         }
 
         this.client.on('message', function (msg: any) {
-            console.log("MSG:Client: ", msg)
+            console.log("MSG:Client: ", msg.data.toString())
             MessageHub.getInstance().notify(msg);
         });
     }

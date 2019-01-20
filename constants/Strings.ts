@@ -1,3 +1,3 @@
 export class Strings {
-    public static MESSAGE_REFRESH  = "REFRESH";
+    public static MESSAGE_REFRESH  = "Refresh";
 }

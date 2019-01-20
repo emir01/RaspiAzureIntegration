@@ -1,5 +1,6 @@
 import { Colors } from './../constants/colors';
 import { TableEntity } from './TableEntity';
+
 export class PiLedModel extends TableEntity {
     size: number;
     matrix: Array<Array<number>> = new Array<Array<number>>();

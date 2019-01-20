@@ -1,6 +1,3 @@
-/*
-    Maintain the Azure Connection
-*/
 export class MessageHub {
     private static instance: MessageHub;
 

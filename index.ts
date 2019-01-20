@@ -1,7 +1,5 @@
-import { PixelHelpers } from './sense/PixelHelpers';
-
-import { AzureConstants } from './constants/AzureConstants';
 import { SenseService } from './sense/SenseService';
+import { AzureConstants } from './constants/AzureConstants';
 import { AzureIoTService } from './azure/AzureIoTService';
 import { MessageHub } from './hub/MessageHub';
 import { AzureLedTableStorage } from './azure/AzureLedTableStorage';
@@ -32,25 +30,21 @@ class Startup {
 
         this.loadModelAndDisplay(ledModel);
 
-        // ledModel.matrix = PixelHelpers.getRandomPixelArray(64);
-        // this.azureLedTableStorage.writeLedModel(ledModel);
-
         this.messageHub.subscribe((msg: any) => {
-            console.log("Refresh Sub Call");
             if(msg.data.toString() == Strings.MESSAGE_REFRESH){
                 this.loadModelAndDisplay(ledModel);
             }
         });
-
-        // reload just in case on every 10 seconds
-        //setInterval(()=>this.loadModelAndDisplay(ledModel), 10000);
     }
 
     loadModelAndDisplay(ledModel: PiLedModel) {
+        console.log("LMAD");
         let model = ledModel;
         this.azureLedTableStorage.loadLedModel(ledModel, (ledModel) => {
+            console.log("LMAD:SUCCESS");
             this.senseService.setBoardPixelsFromLedModel(ledModel);
         }, ()=>{
+            console.log("LMAD:ERROR");
             this.loadModelAndDisplay(model);
         });
     }
